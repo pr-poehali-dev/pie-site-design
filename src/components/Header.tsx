@@ -1,16 +1,28 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
+import { Menu, X, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
+import { useMobile } from "@/hooks/use-mobile";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isMobile = useMobile();
+  const { toast } = useToast();
+
+  const handleCartClick = () => {
+    toast({
+      title: "Корзина",
+      description: "Функционал корзины находится в разработке",
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -20,103 +32,159 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+        "fixed w-full z-50 transition-all duration-300",
         isScrolled
           ? "bg-white shadow-md py-2"
           : "bg-transparent py-4"
       )}
     >
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-display font-bold text-bakery-primary">Вкусные Пироги</span>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:block">
-          <NavigationMenu>
-            <NavigationMenuList className="flex gap-6">
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/" className="text-foreground hover:text-bakery-primary transition-colors font-medium">
-                    Главная
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/menu" className="text-foreground hover:text-bakery-primary transition-colors font-medium">
-                    Меню
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/promo" className="text-foreground hover:text-bakery-primary transition-colors font-medium">
-                    Акции
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/about" className="text-foreground hover:text-bakery-primary transition-colors font-medium">
-                    О нас
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link to="/contacts" className="text-foreground hover:text-bakery-primary transition-colors font-medium">
-                    Контакты
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Link to="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
-            <ShoppingCart className="h-6 w-6 text-bakery-primary" />
-            <span className="absolute -top-1 -right-1 bg-bakery-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
-              0
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center">
+            <img
+              src="/logo-b.svg"
+              alt="Вкусные Пироги"
+              className="h-10 w-auto"
+            />
+            <span className={cn(
+              "ml-2 font-bold text-xl transition-colors duration-300",
+              isScrolled ? "text-[#8B4513]" : "text-[#8B4513]"
+            )}>
+              Вкусные Пироги
             </span>
           </Link>
-          
-          <button 
-            className="block md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6 text-bakery-primary" />
-            ) : (
-              <Menu className="h-6 w-6 text-bakery-primary" />
-            )}
-          </button>
-        </div>
-      </div>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white absolute top-full left-0 w-full shadow-md py-4 px-6 flex flex-col gap-4">
-          <Link to="/" className="py-2 text-foreground hover:text-bakery-primary transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>
-            Главная
-          </Link>
-          <Link to="/menu" className="py-2 text-foreground hover:text-bakery-primary transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>
-            Меню
-          </Link>
-          <Link to="/promo" className="py-2 text-foreground hover:text-bakery-primary transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>
-            Акции
-          </Link>
-          <Link to="/about" className="py-2 text-foreground hover:text-bakery-primary transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>
-            О нас
-          </Link>
-          <Link to="/contacts" className="py-2 text-foreground hover:text-bakery-primary transition-colors font-medium" onClick={() => setMobileMenuOpen(false)}>
-            Контакты
-          </Link>
+          {/* Desktop Menu */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <NavLink to="/" isScrolled={isScrolled}>
+              Главная
+            </NavLink>
+            <NavLink to="/menu" isScrolled={isScrolled}>
+              Меню
+            </NavLink>
+            <NavLink to="/about" isScrolled={isScrolled}>
+              О нас
+            </NavLink>
+            <NavLink to="/promotions" isScrolled={isScrolled}>
+              Акции
+            </NavLink>
+            <NavLink to="/contacts" isScrolled={isScrolled}>
+              Контакты
+            </NavLink>
+          </nav>
+
+          <div className="hidden md:flex items-center space-x-4">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleCartClick}
+              className={cn(
+                "relative transition-colors",
+                isScrolled ? "text-[#8B4513] hover:text-[#6B3410]" : "text-[#8B4513] hover:text-[#6B3410]"
+              )}
+            >
+              <ShoppingBag className="h-6 w-6" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                0
+              </span>
+            </Button>
+            <Button className="bg-[#8B4513] hover:bg-[#6B3410]">
+              Заказать
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleCartClick}
+              className="relative mr-2 text-[#8B4513]"
+            >
+              <ShoppingBag className="h-6 w-6" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                0
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-[#8B4513]"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        {isMobile && isMobileMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 animate-fade-in">
+            <nav className="flex flex-col space-y-4">
+              <MobileNavLink to="/" onClick={() => setIsMobileMenuOpen(false)}>
+                Главная
+              </MobileNavLink>
+              <MobileNavLink to="/menu" onClick={() => setIsMobileMenuOpen(false)}>
+                Меню
+              </MobileNavLink>
+              <MobileNavLink to="/about" onClick={() => setIsMobileMenuOpen(false)}>
+                О нас
+              </MobileNavLink>
+              <MobileNavLink to="/promotions" onClick={() => setIsMobileMenuOpen(false)}>
+                Акции
+              </MobileNavLink>
+              <MobileNavLink to="/contacts" onClick={() => setIsMobileMenuOpen(false)}>
+                Контакты
+              </MobileNavLink>
+              <Button className="bg-[#8B4513] hover:bg-[#6B3410] w-full">
+                Заказать
+              </Button>
+            </nav>
+          </div>
+        )}
+      </div>
     </header>
   );
 };
+
+interface NavLinkProps {
+  to: string;
+  isScrolled: boolean;
+  children: React.ReactNode;
+}
+
+const NavLink = ({ to, isScrolled, children }: NavLinkProps) => (
+  <Link
+    to={to}
+    className={cn(
+      "text-base font-medium relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left transition-colors",
+      isScrolled
+        ? "text-[#8B4513] after:bg-[#8B4513]"
+        : "text-[#8B4513] after:bg-[#8B4513]"
+    )}
+  >
+    {children}
+  </Link>
+);
+
+interface MobileNavLinkProps {
+  to: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const MobileNavLink = ({ to, onClick, children }: MobileNavLinkProps) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className="text-[#8B4513] text-lg font-medium px-4 py-2 hover:bg-amber-50 rounded-md transition-colors"
+  >
+    {children}
+  </Link>
+);
 
 export default Header;
